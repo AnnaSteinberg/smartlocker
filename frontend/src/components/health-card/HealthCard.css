@@ -1,0 +1,150 @@
+.card {
+    width: min(100%, 560px);
+    padding: 32px;
+    border-radius: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #335c81;
+}
+
+.title {
+    margin: 0 0 12px;
+    font-size: 2rem;
+    line-height: 1.1;
+    color: #102a43;
+}
+
+.description {
+    margin: 0 0 24px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #486581;
+}
+
+.actions {
+
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.health-button {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #0f609b;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.health-button:hover {
+    background-color: #0a4d7d;
+}
+
+.health-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.result-box {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 16px 18px;
+    border-radius: 14px;
+}
+
+.result-box--idle {
+    background-color: #f0f4f8;
+}
+
+.result-box--loading {
+    background-color: #d9ecff;
+}
+
+.result-box--success {
+    background-color: #d9fbe5;
+}
+
+.result-box--error {
+    background-color: #ffe0e0;
+}
+
+.result-label {
+    font-weight: 700;
+    color: #102a43;
+}
+
+.result-value {
+    color: #334e68;
+}
+.reset-button {
+    border: 1px solid #bcccdc;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #102a43;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reset-button:hover {
+    background-color: #f0f4f8;
+}
+
+.reset-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.status-badge--idle {
+    color: #486581;
+    background-color: #d9e2ec;
+}
+
+.status-badge--loading {
+    color: #0f609b;
+    background-color: #bfe3ff;
+}
+
+.status-badge--success {
+    color: #17603a;
+    background-color: #b8f5cb;
+}
+
+.status-badge--error {
+    color: #9b1c1c;
+    background-color: #ffc9c9;
+}
