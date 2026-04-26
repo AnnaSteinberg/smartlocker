@@ -20,6 +20,17 @@ The current implemented flow is:
 6. Backend transforms the response and returns it to the frontend
 7. Frontend displays the result
 
+## Current Auth Flow
+
+The current implemented authentication and authorization flow is:
+
+1. Client sends credentials to backend (`/api/auth/register` or `/api/auth/login`)
+2. Backend returns `accessToken` and `refreshToken`
+3. Client calls protected routes with `Authorization: Bearer <accessToken>`
+4. Backend middleware validates token and attaches user payload to request
+5. Role middleware checks access rights for role-protected endpoints
+6. Client can request a new access token via `/api/auth/refresh`
+
 ## Current Responsibilities
 
 ### Frontend
@@ -33,6 +44,9 @@ The current implemented flow is:
 - handles success and failure responses
 - returns a normalized response to the frontend
 - logs incoming requests, completed responses, and errors
+- handles JWT-based authentication and token refresh
+- enforces role-based access control via middleware
+- uses repository abstractions for user access and log persistence (current in-memory implementation)
 
 ### Lambda
 - exposes a local `/health` endpoint

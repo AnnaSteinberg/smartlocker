@@ -7,12 +7,12 @@
 - [x] Add basic error handling
 - [x] Add initial project structure for frontend and backend
 - [x] Add structured logging foundation
-- [ ] Initialize git and publish repository
+- [x] Initialize git and publish repository
 
 ## Phase 2 - Core Backend Features
-- [ ] Authentication
-- [ ] Role model: USER / OPERATOR / ADMIN
-- [ ] Protected backend routes
+- [x] Authentication (register/login/refresh/me)
+- [x] Role model: USER / OPERATOR / ADMIN
+- [x] Protected backend routes
 - [ ] API documentation basics
 
 ## Phase 3 - Locker Domain

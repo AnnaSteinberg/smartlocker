@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-04-26
+
+### Added
+- JWT authentication endpoints: register, login, refresh, me
+- Role-based protected routes for ADMIN and OPERATOR/ADMIN access
+- Authentication and role middlewares
+- User repository abstraction (in-memory implementation)
+- Log types and log repository abstraction (in-memory implementation)
+
+### Changed
+- backend config now validates JWT secrets
+- logger now persists log entries via repository in addition to console output
+- backend routing now includes auth router under `/api`
+
 ## Current Stage
 
 ### Implemented
