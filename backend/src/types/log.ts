@@ -1,8 +1,5 @@
-export const LOG_LEVELS = {
-    INFO: 'info',
-    WARN: 'warn',
-    ERROR: 'error',
-} as const;
+import {LOG_LEVELS} from "../constants/log.constants";
+
 
 export type LogLevel = (typeof LOG_LEVELS)[keyof typeof LOG_LEVELS];
 
