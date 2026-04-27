@@ -14,6 +14,14 @@
 - logger now persists log entries via repository in addition to console output
 - backend routing now includes auth router under `/api`
 
+## 2026-04-27
+
+### Added
+- admin-only endpoint `GET /api/monitoring/logs`
+- optional `level` query filter (`info|warn|error`)
+- monitoring service layer for log retrieval
+- centralized log level constants in backend constants
+
 ## Current Stage
 
 ### Implemented

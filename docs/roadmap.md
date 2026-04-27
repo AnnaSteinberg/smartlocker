@@ -28,9 +28,9 @@
 - [ ] Async status handling
 
 ## Phase 5 - Monitoring and Management
-- [ ] Error tracking
+- [x] Error tracking foundation (log repository + admin logs endpoint)
 - [ ] Operator views
-- [ ] Admin views
+- [x] Admin views foundation (logs API for ADMIN role)
 - [ ] Audit trail / important events logging
 
 ## Phase 6 - Project Readiness

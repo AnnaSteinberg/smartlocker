@@ -47,6 +47,7 @@ The current implemented authentication and authorization flow is:
 - handles JWT-based authentication and token refresh
 - enforces role-based access control via middleware
 - uses repository abstractions for user access and log persistence (current in-memory implementation)
+- provides admin-only monitoring endpoint to read application logs with optional level filter
 
 ### Lambda
 - exposes a local `/health` endpoint
