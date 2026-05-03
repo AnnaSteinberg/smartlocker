@@ -7,14 +7,7 @@ import type {AuthPayload, AuthResult, RefreshResult, RefreshTokenPayload} from '
 import type { User } from '../types/user';
 import { HTTP_STATUS } from '../constants/http-status';
 import {AppError} from "../errors/app-error";
-
-function hashPassword(plain: string):string{
-    return plain;
-}
-
-function  verifyPassword(plain: string, hash: string):boolean{
-    return plain === hash;
-}
+import { hashPassword, verifyPassword } from '../lib/password';
 
 function signAccessToken(payload:AuthPayload):string {
     return  jwt.sign(payload, config.jwtAccessSecret, {
@@ -53,15 +46,11 @@ function toAuthResult(user: User): AuthResult {
 export function register(params: {
     email: string;
     password: string;
-    role?: Role;
 }): AuthResult {
-    const email = params.email.trim().toLowerCase();
-    const password = params.password.trim();
-    const role = params.role ?? ROLES.USER;
+    const email = params.email;
+    const password = params.password;
+    const role = ROLES.USER;
 
-    if (!email || !password) {
-        throw new AppError('Email and password are required', HTTP_STATUS.BAD_REQUEST);
-    }
 
     if (userRepository.findByEmail(email)) {
         throw new AppError('User already exists', HTTP_STATUS.CONFLICT);
@@ -81,12 +70,9 @@ export function register(params: {
 }
 
 export function login(params: { email: string; password: string }): AuthResult {
-    const email = params.email.trim().toLowerCase();
-    const password = params.password.trim();
+    const email = params.email;
+    const password = params.password;
 
-    if (!email || !password) {
-        throw new AppError('Email and password are required', HTTP_STATUS.BAD_REQUEST);
-    }
 
     const user = userRepository.findByEmail(email);
 
@@ -100,7 +86,7 @@ export function login(params: { email: string; password: string }): AuthResult {
 export function refreshAccessToken(params: {
     refreshToken: string;
 }): RefreshResult {
-    const refreshToken = params.refreshToken?.trim();
+    const refreshToken = params.refreshToken;
 
     if (!refreshToken) {
         throw new AppError('Refresh token is required', HTTP_STATUS.BAD_REQUEST);
