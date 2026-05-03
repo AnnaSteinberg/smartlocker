@@ -45,6 +45,9 @@ The current implemented authentication and authorization flow is:
 - returns a normalized response to the frontend
 - logs incoming requests, completed responses, and errors
 - handles JWT-based authentication and token refresh
+- validates auth request payloads with Zod schemas at route layer
+- stores passwords as hashes (scrypt), not plain text
+- public registration assigns `USER` role by default (role escalation through register is blocked)
 - enforces role-based access control via middleware
 - uses repository abstractions for user access and log persistence (current in-memory implementation)
 - provides admin-only monitoring endpoint to read application logs with optional level filter

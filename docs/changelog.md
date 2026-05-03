@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-05-03
+
+### Added
+- secure password hashing via `scrypt` in backend auth flow
+- shared password utility module (`backend/src/lib/password.ts`)
+- Zod-based request validation for auth endpoints (`register`, `login`, `refresh`)
+
+### Changed
+- public registration now always assigns role `USER`
+- auth routes now validate and normalize request payloads before calling services
+- seed users are now stored with hashed passwords instead of plain text
+
+### Notes
+- user and log storage remain in-memory (temporary foundation stage)
+
 ## 2026-04-26
 
 ### Added
