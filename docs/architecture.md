@@ -51,6 +51,7 @@ The current implemented authentication and authorization flow is:
 - enforces role-based access control via middleware
 - uses repository abstractions for user access and log persistence (current in-memory implementation)
 - provides admin-only monitoring endpoint to read application logs with optional level filter
+- allows role reassignment only via admin-protected endpoint (`POST /api/auth/assign-role`)
 
 ### Lambda
 - exposes a local `/health` endpoint

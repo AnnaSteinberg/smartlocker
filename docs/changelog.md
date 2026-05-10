@@ -1,4 +1,10 @@
-# Changelog
+# Changelog## 2026-05-10
+
+## 2026-05-10
+
+### Added
+- admin-only endpoint `POST /api/auth/assign-role` for controlled role assignment
+- role assignment validation via Zod (`userId` as UUID, `role` from allowed roles)
 
 ## 2026-05-03
 
