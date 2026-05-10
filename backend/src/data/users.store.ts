@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { ROLES } from '../constants/roles';
+import {Role, ROLES} from '../constants/roles';
 import type { User } from '../types/user';
 import { hashPassword } from '../lib/password';
 
@@ -49,4 +49,15 @@ export function addUser(user: User): void {
 
 export function findUserById(id: string): User | undefined {
     return usersStore.find((user) => user.id === id);
+}
+
+export function updateUserRoleById(id: string, role: Role): User | undefined {
+    const user = findUserById(id);
+
+    if (!user) {
+        return undefined;
+    }
+
+    user.role = role;
+    return user;
 }

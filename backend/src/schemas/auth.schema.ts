@@ -1,5 +1,6 @@
 
 import { z } from 'zod';
+import { ROLE_VALUES } from '../constants/roles';
 
 const emailSchema = z
     .string()
@@ -29,5 +30,12 @@ export const loginBodySchema = z
 export const refreshBodySchema = z
     .object({
         refreshToken: z.string().trim().min(1, 'Refresh token is required'),
+    })
+    .strict();
+
+export const assignRoleBodySchema = z
+    .object({
+        userId: z.string().uuid('Invalid userId format'),
+        role: z.enum(ROLE_VALUES),
     })
     .strict();

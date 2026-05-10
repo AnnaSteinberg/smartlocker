@@ -1,12 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { AUTH_PATHS } from '../constants/routes';
 import { HTTP_STATUS } from '../constants/http-status';
-import { login, register, refreshAccessToken } from '../services/auth.service';
+import { login, register, refreshAccessToken, assignRoleToUser } from '../services/auth.service';
 import { ROLES } from '../constants/roles';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireRoles } from '../middleware/roles.middleware';
 import type { AuthenticatedRequest } from '../types/request';
-import {loginBodySchema, refreshBodySchema, registerBodySchema,} from '../schemas/auth.schema';
+import {loginBodySchema, refreshBodySchema, registerBodySchema, assignRoleBodySchema} from '../schemas/auth.schema';
 import { AppError } from '../errors/app-error';
 import { z } from 'zod';
 import type { ZodTypeAny } from 'zod';
@@ -101,6 +101,24 @@ authRouter.post(
             const body = parseOrThrow(refreshBodySchema, req.body);
             const result = refreshAccessToken(body);
             res.status(HTTP_STATUS.OK).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+authRouter.post(
+    AUTH_PATHS.ASSIGN_ROLE,
+    authenticate,
+    requireRoles(ROLES.ADMIN),
+    (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const body = parseOrThrow(assignRoleBodySchema, req.body);
+            const user = assignRoleToUser(body);
+
+            res.status(HTTP_STATUS.OK).json({
+                user,
+            });
         } catch (error) {
             next(error);
         }

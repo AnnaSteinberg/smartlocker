@@ -3,7 +3,13 @@ import jwt from 'jsonwebtoken';
 import { ROLES, type Role } from '../constants/roles';
 import { userRepository } from '../repositories/user.repository';
 import { config } from '../config';
-import type {AuthPayload, AuthResult, RefreshResult, RefreshTokenPayload} from '../types/auth';
+import type {
+    AuthPayload,
+    AuthResult,
+    AuthUserResponse,
+    RefreshResult,
+    RefreshTokenPayload,
+} from '../types/auth';
 import type { User } from '../types/user';
 import { HTTP_STATUS } from '../constants/http-status';
 import {AppError} from "../errors/app-error";
@@ -21,6 +27,15 @@ function signRefreshToken(payload: RefreshTokenPayload): string {
     });
 }
 
+function toAuthUserResponse(user: User): AuthUserResponse {
+    return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+    };
+}
+
 function toAuthResult(user: User): AuthResult {
     const accessToken = signAccessToken({
         userId: user.id,
@@ -34,12 +49,7 @@ function toAuthResult(user: User): AuthResult {
     return {
         accessToken,
         refreshToken,
-        user: {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            createdAt: user.createdAt,
-        },
+        user: toAuthUserResponse(user),
     };
 }
 
@@ -118,4 +128,17 @@ export function refreshAccessToken(params: {
 
         throw new AppError('Invalid or expired refresh token', HTTP_STATUS.UNAUTHORIZED);
     }
+}
+
+export function assignRoleToUser(params: {
+    userId: string;
+    role: Role;
+}): AuthUserResponse {
+    const user = userRepository.updateRoleById(params.userId, params.role);
+
+    if (!user) {
+        throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    return toAuthUserResponse(user);
 }

@@ -8,6 +8,7 @@ export const AUTH_PATHS = {
     ADMIN_ONLY: '/auth/admin-only',
     OPERATOR_OR_ADMIN: '/auth/operator-or-admin',
     REFRESH: '/auth/refresh',
+    ASSIGN_ROLE: '/auth/assign-role',
 } as const;
 
 export const MONITORING_PATHS = {
