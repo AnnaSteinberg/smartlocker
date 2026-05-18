@@ -1,4 +1,14 @@
-# Changelog## 2026-05-10
+# Changelog
+
+## 2026-05-18
+
+### Added
+- login rate limiting for `POST /api/auth/login`
+- account lockout protection after repeated failed login attempts
+- centralized login security constants for rate limiting and lockout settings
+
+### Notes
+- login protection currently uses in-memory counters and should later move to Redis or persistent storage for production-like behavior
 
 ## 2026-05-10
 
