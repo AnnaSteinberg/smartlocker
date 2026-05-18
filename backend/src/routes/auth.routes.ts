@@ -8,8 +8,8 @@ import { requireRoles } from '../middleware/roles.middleware';
 import type { AuthenticatedRequest } from '../types/request';
 import {loginBodySchema, refreshBodySchema, registerBodySchema, assignRoleBodySchema} from '../schemas/auth.schema';
 import { AppError } from '../errors/app-error';
-import { z } from 'zod';
-import type { ZodTypeAny } from 'zod';
+import { z , ZodTypeAny} from 'zod';
+import { loginRateLimit } from '../middleware/login-rate-limit';
 
 const authRouter = Router();
 
@@ -38,7 +38,7 @@ authRouter.post(AUTH_PATHS.REGISTER, (req:Request, res: Response, next: NextFunc
     }
 });
 
-authRouter.post(AUTH_PATHS.LOGIN, (req:Request, res: Response, next: NextFunction) => {
+authRouter.post(AUTH_PATHS.LOGIN, loginRateLimit,(req:Request, res: Response, next: NextFunction) => {
     try{
         const body = parseOrThrow(loginBodySchema, req.body);
         const result = login(body);

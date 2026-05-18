@@ -3,17 +3,12 @@ import jwt from 'jsonwebtoken';
 import { ROLES, type Role } from '../constants/roles';
 import { userRepository } from '../repositories/user.repository';
 import { config } from '../config';
-import type {
-    AuthPayload,
-    AuthResult,
-    AuthUserResponse,
-    RefreshResult,
-    RefreshTokenPayload,
-} from '../types/auth';
+import type {AuthPayload, AuthResult, AuthUserResponse, RefreshResult, RefreshTokenPayload} from '../types/auth';
 import type { User } from '../types/user';
 import { HTTP_STATUS } from '../constants/http-status';
 import {AppError} from "../errors/app-error";
 import { hashPassword, verifyPassword } from '../lib/password';
+import {assertLoginAllowed, registerFailedLogin, resetLoginAttempts,} from './login-attempts.service';
 
 function signAccessToken(payload:AuthPayload):string {
     return  jwt.sign(payload, config.jwtAccessSecret, {
@@ -79,20 +74,6 @@ export function register(params: {
     return toAuthResult(user);
 }
 
-export function login(params: { email: string; password: string }): AuthResult {
-    const email = params.email;
-    const password = params.password;
-
-
-    const user = userRepository.findByEmail(email);
-
-    if (!user || !verifyPassword(password, user.passwordHash)) {
-        throw new AppError('Invalid email or password', HTTP_STATUS.UNAUTHORIZED);
-    }
-
-    return toAuthResult(user);
-}
-
 export function refreshAccessToken(params: {
     refreshToken: string;
 }): RefreshResult {
@@ -141,4 +122,38 @@ export function assignRoleToUser(params: {
     }
 
     return toAuthUserResponse(user);
+}
+
+export function login(params: { email: string; password: string }): AuthResult {
+    const email = params.email;
+    const password = params.password;
+
+    try {
+        // 1) Сначала проверяем lockout для аккаунта.
+        assertLoginAllowed(email);
+
+        // 2) Ищем пользователя и проверяем пароль.
+        const user = userRepository.findByEmail(email);
+
+        if (!user || !verifyPassword(password, user.passwordHash)) {
+            // 3) Неверный вход -> увеличиваем счетчик неудач.
+            registerFailedLogin(email);
+            throw new AppError('Invalid email or password', HTTP_STATUS.UNAUTHORIZED);
+        }
+
+        // 4) Успешный вход -> очищаем счетчик неудач.
+        resetLoginAttempts(email);
+
+        return toAuthResult(user);
+    } catch (error) {
+        // 5) Спец-ошибка lockout преобразуем в HTTP 429.
+        if (error instanceof Error && error.message === 'ACCOUNT_LOCKED') {
+            throw new AppError(
+                'Account is temporarily locked due to too many failed login attempts',
+                HTTP_STATUS.TOO_MANY_REQUESTS
+            );
+        }
+
+        throw error;
+    }
 }
