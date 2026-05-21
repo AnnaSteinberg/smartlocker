@@ -9,17 +9,38 @@ import { HTTP_STATUS } from '../constants/http-status';
 import {AppError} from "../errors/app-error";
 import { hashPassword, verifyPassword } from '../lib/password';
 import {assertLoginAllowed, registerFailedLogin, resetLoginAttempts,} from './login-attempts.service';
+import { TOKEN_SETTINGS } from '../constants/token.constants';
+import {refreshTokenRepository} from "../repositories/refresh-token.repository";
 
 function signAccessToken(payload:AuthPayload):string {
     return  jwt.sign(payload, config.jwtAccessSecret, {
-        expiresIn: '15m'
+        expiresIn: TOKEN_SETTINGS.ACCESS_TOKEN_EXPIRES_IN
     });
 }
 
 function signRefreshToken(payload: RefreshTokenPayload): string {
     return jwt.sign(payload, config.jwtRefreshSecret, {
-        expiresIn: '7d',
+        expiresIn: TOKEN_SETTINGS.REFRESH_TOKEN_EXPIRES_IN,
     });
+}
+
+function createRefreshToken(userId: string): string {
+    const tokenId = randomUUID();
+    const refreshToken = signRefreshToken({
+        userId,
+        tokenId,
+    });
+
+    const nowMs = Date.now();
+
+    refreshTokenRepository.save({
+        tokenId,
+        userId,
+        createdAt: new Date(nowMs).toISOString(),
+        expiresAt: new Date(nowMs + TOKEN_SETTINGS.REFRESH_TOKEN_TTL_MS).toISOString(),
+    });
+
+    return refreshToken;
 }
 
 function toAuthUserResponse(user: User): AuthUserResponse {
@@ -37,9 +58,7 @@ function toAuthResult(user: User): AuthResult {
         email: user.email,
         role: user.role,
     });
-    const refreshToken = signRefreshToken({
-        userId: user.id,
-    });
+    const refreshToken =  createRefreshToken(user.id);
 
     return {
         accessToken,
@@ -88,6 +107,15 @@ export function refreshAccessToken(params: {
             refreshToken,
             config.jwtRefreshSecret
         ) as RefreshTokenPayload;
+
+        const storedToken = refreshTokenRepository.findByTokenId(payload.tokenId);
+
+        if (!storedToken || storedToken.revokedAt) {
+            throw new AppError('Refresh token has been revoked', HTTP_STATUS.UNAUTHORIZED);
+        }
+
+        if (new Date(storedToken.expiresAt).getTime() <= Date.now()) {
+            throw new AppError('Refresh token has expired', HTTP_STATUS.UNAUTHORIZED);}
 
         const user = userRepository.findById(payload.userId);
 
@@ -155,5 +183,34 @@ export function login(params: { email: string; password: string }): AuthResult {
         }
 
         throw error;
+    }
+
+
+}
+
+export function logout(params: { refreshToken: string }): void {
+    const refreshToken = params.refreshToken;
+
+    if (!refreshToken) {
+        throw new AppError('Refresh token is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    try {
+        const payload = jwt.verify(
+            refreshToken,
+            config.jwtRefreshSecret
+        ) as RefreshTokenPayload;
+
+        const revokedToken = refreshTokenRepository.revokeByTokenId(payload.tokenId);
+
+        if (!revokedToken) {
+            throw new AppError('Refresh token not found', HTTP_STATUS.UNAUTHORIZED);
+        }
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError('Invalid or expired refresh token', HTTP_STATUS.UNAUTHORIZED);
     }
 }

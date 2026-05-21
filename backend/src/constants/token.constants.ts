@@ -1,0 +1,5 @@
+export const TOKEN_SETTINGS = {
+    ACCESS_TOKEN_EXPIRES_IN: '15m',
+    REFRESH_TOKEN_EXPIRES_IN: '7d',
+    REFRESH_TOKEN_TTL_MS: 7 * 24 * 60 * 60 * 1000,
+} as const;

@@ -33,6 +33,8 @@ export const refreshBodySchema = z
     })
     .strict();
 
+export const logoutBodySchema = refreshBodySchema;
+
 export const assignRoleBodySchema = z
     .object({
         userId: z.string().uuid('Invalid userId format'),

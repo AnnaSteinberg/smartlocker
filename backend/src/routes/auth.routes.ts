@@ -1,12 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { AUTH_PATHS } from '../constants/routes';
 import { HTTP_STATUS } from '../constants/http-status';
-import { login, register, refreshAccessToken, assignRoleToUser } from '../services/auth.service';
+import { login, register, refreshAccessToken, assignRoleToUser, logout } from '../services/auth.service';
 import { ROLES } from '../constants/roles';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireRoles } from '../middleware/roles.middleware';
 import type { AuthenticatedRequest } from '../types/request';
-import {loginBodySchema, refreshBodySchema, registerBodySchema, assignRoleBodySchema} from '../schemas/auth.schema';
+import {loginBodySchema, refreshBodySchema, registerBodySchema, assignRoleBodySchema, logoutBodySchema} from '../schemas/auth.schema';
 import { AppError } from '../errors/app-error';
 import { z , ZodTypeAny} from 'zod';
 import { loginRateLimit } from '../middleware/login-rate-limit';
@@ -118,6 +118,22 @@ authRouter.post(
 
             res.status(HTTP_STATUS.OK).json({
                 user,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+authRouter.post(
+    AUTH_PATHS.LOGOUT,
+    (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const body = parseOrThrow(logoutBodySchema, req.body);
+            logout(body);
+
+            res.status(HTTP_STATUS.OK).json({
+                message: 'Logged out successfully',
             });
         } catch (error) {
             next(error);

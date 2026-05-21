@@ -8,6 +8,7 @@ export interface AuthPayload {
 
 export interface RefreshTokenPayload {
     userId: string;
+    tokenId: string;
 }
 
 export interface AuthUserResponse {
@@ -25,4 +26,12 @@ export interface AuthResult {
 
 export interface RefreshResult {
     accessToken: string;
+}
+
+export interface StoredRefreshToken {
+    tokenId: string;
+    userId: string;
+    expiresAt: string;
+    createdAt: string;
+    revokedAt?: string;
 }
