@@ -25,11 +25,14 @@ The current implemented flow is:
 The current implemented authentication and authorization flow is:
 
 1. Client sends credentials to backend (`/api/auth/register` or `/api/auth/login`)
-2. Backend returns `accessToken` and `refreshToken`
-3. Client calls protected routes with `Authorization: Bearer <accessToken>`
-4. Backend middleware validates token and attaches user payload to request
-5. Role middleware checks access rights for role-protected endpoints
-6. Client can request a new access token via `/api/auth/refresh`
+2. Backend creates `accessToken` and `refreshToken`
+3. Backend stores refresh token state with unique `tokenId`
+4. Client calls protected routes with `Authorization: Bearer <accessToken>`
+5. Backend middleware validates access token and attaches user payload to request
+6. Role middleware checks access rights for role-protected endpoints
+7. Client can request a new access token via `/api/auth/refresh`
+8. Backend validates refresh JWT and checks stored token state (`active/revoked/expired`)
+9. Client can logout via `/api/auth/logout`, which revokes the refresh token
 
 ## Current Responsibilities
 
@@ -54,6 +57,9 @@ The current implemented authentication and authorization flow is:
 - allows role reassignment only via admin-protected endpoint (`POST /api/auth/assign-role`)
 - applies rate limiting to login requests to reduce brute-force attempts
 - applies account lockout by email after repeated failed login attempts
+-  manages refresh token lifecycle through token repository (current in-memory implementation)
+- supports logout by revoking refresh tokens
+- checks refresh token stored state before issuing a new access token
 
 ### Lambda
 - exposes a local `/health` endpoint

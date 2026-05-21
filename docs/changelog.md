@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-05-21
+
+### Added
+- refresh token lifecycle management with in-memory repository
+- `tokenId` (`jti`-style identifier) inside refresh token payload
+- `POST /api/auth/logout` endpoint for refresh token revocation
+- centralized token lifetime settings (`backend/src/constants/token.constants.ts`)
+
+### Changed
+- refresh flow now checks stored token state before issuing a new access token
+- revoked refresh tokens can no longer be used for `/api/auth/refresh`
+
+### Notes
+- refresh token storage is currently in-memory and should later move to persistent storage or Redis
+
 ## 2026-05-18
 
 ### Added
