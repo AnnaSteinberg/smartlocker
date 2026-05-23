@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-23
+
+### Added
+- backend environment validation with Zod
+- backend `.env.example` with required local configuration values
+
+### Changed
+- backend startup now fails early when required environment variables are missing or invalid
+
 ## 2026-05-21
 
 ### Added
