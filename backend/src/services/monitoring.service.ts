@@ -1,28 +1,41 @@
-import { HTTP_STATUS } from '../constants/http-status';
-import { AppError } from '../errors/app-error';
 import { logRepository } from '../repositories/log.repository';
-import {LOG_LEVELS} from "../constants/log.constants";
-import {LogEntry, LogLevel} from "../types/log";
+import type { LogEntry, LogLevel } from '../types/log';
 
-const LOG_LEVEL_SET = new Set<string>(Object.values(LOG_LEVELS));
+type GetLogsParams = {
+    level?: LogLevel;
+    limit: number;
+    offset: number;
+};
 
-function isLogLevel(value: string): value is LogLevel {
-    return LOG_LEVEL_SET.has(value);
-}
+type GetLogsResult = {
+    total: number;
+    count: number;
+    limit: number;
+    offset: number;
+    logs: LogEntry[];
+};
 
-export function getLogs(level?: string): LogEntry[] {
-    if (!level) {
-        return logRepository.list();
-    }
+export function getLogs(params: GetLogsParams): GetLogsResult {
+    const logs = params.level
+        ? logRepository.listByLevel(params.level)
+        : logRepository.list();
 
-    const normalizedLevel = level.trim().toLowerCase();
-
-    if (!isLogLevel(normalizedLevel)) {
-        throw new AppError(
-            'Invalid log level.',
-            HTTP_STATUS.BAD_REQUEST
+    const sortedLogs = [...logs].sort((left, right) => {
+        return (
+            new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime()
         );
-    }
+    });
 
-    return logRepository.listByLevel(normalizedLevel);
+    const paginatedLogs = sortedLogs.slice(
+        params.offset,
+        params.offset + params.limit
+    );
+
+    return {
+        total: sortedLogs.length,
+        count: paginatedLogs.length,
+        limit: params.limit,
+        offset: params.offset,
+        logs: paginatedLogs,
+    };
 }

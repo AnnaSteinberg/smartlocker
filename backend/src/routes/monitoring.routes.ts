@@ -5,6 +5,8 @@ import { getLogs } from '../services/monitoring.service';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireRoles } from '../middleware/roles.middleware';
 import { ROLES } from '../constants/roles';
+import { logsQuerySchema } from '../schemas/monitoring.schema';
+import { parseOrThrow } from '../lib/validation';
 
 const monitoringRouter = Router();
 
@@ -14,13 +16,10 @@ monitoringRouter.get(
     requireRoles(ROLES.ADMIN),
     (req: Request, res: Response, next: NextFunction) => {
         try {
-            const level = typeof req.query.level === 'string' ? req.query.level : undefined;
-            const logs = getLogs(level);
+            const query = parseOrThrow(logsQuerySchema, req.query);
+            const result = getLogs(query);
 
-            res.status(HTTP_STATUS.OK).json({
-                count: logs.length,
-                logs,
-            });
+            res.status(HTTP_STATUS.OK).json(result);
         } catch (error) {
             next(error);
         }
