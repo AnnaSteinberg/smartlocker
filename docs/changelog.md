@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-05-24
+
+### Added
+- Zod validation for monitoring logs query parameters
+- paginated monitoring logs response with `total`, `count`, `limit`, and `offset`
+
+### Changed
+- `GET /api/monitoring/logs` now supports `level`, `limit`, and `offset` query parameters
+- monitoring logs are returned newest first
+
 ## 2026-05-23
 
 ### Added

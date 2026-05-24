@@ -53,8 +53,7 @@ The current implemented authentication and authorization flow is:
 - public registration assigns `USER` role by default (role escalation through register is blocked)
 - enforces role-based access control via middleware
 - uses repository abstractions for user access and log persistence (current in-memory implementation)
-- provides admin-only monitoring endpoint to read application logs with optional level filter
-- allows role reassignment only via admin-protected endpoint (`POST /api/auth/assign-role`)
+- provides admin-only monitoring endpoint with level filtering, pagination, and newest-first sorting- allows role reassignment only via admin-protected endpoint (`POST /api/auth/assign-role`)
 - applies rate limiting to login requests to reduce brute-force attempts
 - applies account lockout by email after repeated failed login attempts
 -  manages refresh token lifecycle through token repository (current in-memory implementation)
